@@ -1,6 +1,7 @@
 from flask import *
-
+from dotenv import load_dotenv
 from markupsafe import escape
+import os
 
 
 # Need to create an instance of the Flask class. This instance will be the WSGI application.
