@@ -1,7 +1,12 @@
 from flask import *
 from dotenv import load_dotenv
 from markupsafe import escape
+import googlemaps
 import os
+
+load_dotenv()
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+
 
 
 # Need to create an instance of the Flask class. This instance will be the WSGI application.
@@ -9,13 +14,15 @@ import os
 # This is needed so that Flask knows where to look for resources such as templates and static files.
 app = Flask(__name__)
 
+gmaps = googlemaps.Client(GOOGLE_API_KEY)
+
 @app.route("/")
 def home():
     return '<h>Home Page</h>'
 
 # Setting up an API 
 @app.route("/analyze-location", methods=['GET'])
-def analyze_location(): 
+def analyze_location():     
     error = None
 
     if request.method == 'GET': 
@@ -32,9 +39,11 @@ def analyze_location():
             'radius' : str(radius)
         }
 
+        latLong = gmaps.geocode(business['address'])
+
 
         # Form data, data received from PUT or POST requests via the body
-        return  business 
+        return  latLong 
     
     return error
 
