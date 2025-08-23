@@ -2,12 +2,12 @@ from flask import *
 from dotenv import load_dotenv
 from markupsafe import escape
 import googlemaps
+import  requests
 import os
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-
-
+CENSUS_API_KEY = os.getenv("CENSUS_API_KEY")
 
 # Need to create an instance of the Flask class. This instance will be the WSGI application.
 # The first argument is the name of the application's package. "__name__" is a shortcut for this. 
@@ -41,7 +41,8 @@ def analyze_location():
 
         latLong = gmaps.geocode(business['address'])
 
-
+        # Example Call: api.census.gov/data/2023/acs/acs5?get=NAME,group(B01001)&for=us:1&key=YOUR_KEY_GOES_HERE
+        
         # Form data, data received from PUT or POST requests via the body
         return  latLong 
     
@@ -64,3 +65,5 @@ with app.test_request_context():
     print(url_for('home'))
     print(url_for('user', username='pierrot'))
     print(url_for('static', filename='style.css'))
+
+    
