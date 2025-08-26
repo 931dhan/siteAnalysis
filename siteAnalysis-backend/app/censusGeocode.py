@@ -3,17 +3,20 @@ import json
 
 
 def censusGeocode(address: str):
-    returntype = "geographies"
-    searchtype = "onelineaddress"
 
-    url = f"https://geocoding.geo.census.gov/geocoder/{returntype}/{searchtype}"
+    # We want the geocoding response along with the geographic lookup information for various levels of geography.
+    returntype = 'geographies'
+    # Inputted location will be formatted as an address in one line. 
+    searchtype = 'onelineaddress'
 
+    # Base url for API call. 
+    url = f'https://geocoding.geo.census.gov/geocoder/{returntype}/{searchtype}'
 
     params = {
-        "address" : address, 
-        "benchmark" : "Public_AR_Current",
-        "vintage" : "Current_Current",
-        "format" : "json"
+        'address' : address, 
+        'benchmark' : 'Public_AR_Current',
+        'vintage' : 'Current_Current',
+        'format' : 'json'
     }
 
 
@@ -27,7 +30,7 @@ def censusGeocode(address: str):
         'for':  f'tract:{data['TRACT']}',
         'STATE': data['STATE'], 
         'COUNTY': data['COUNTY'],
-        'in' :f"state:{data['STATE']}+county:{data['COUNTY']}"
+        'in' :f'state:{data['STATE']}+county:{data['COUNTY']}'
         }
     print(censusLoc)
     return censusLoc

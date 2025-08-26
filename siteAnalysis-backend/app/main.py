@@ -63,7 +63,7 @@ def analyze_location():
 # Can specify data type with a format such as <int:userId>
 @app.route('/user/<string:username>')
 def user(username): 
-    return f' {username}'
+    return f'{username}'
 
 # Rendering HTML templates with Jinja
 @app.route('/hello')
