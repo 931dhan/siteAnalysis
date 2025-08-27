@@ -35,3 +35,24 @@ def acsCall(address):
     result = dict(zip(headers, values))
 
     return result
+
+def acsCallWithTiger(state, county):
+    
+    url = 'https://api.census.gov/data/2023/acs/acs5'
+
+    variables = ','.join(['NAME', 'B19013_001E', 'B01003_001E'])
+
+    params = {
+        'get': variables,   
+        'for': f'tract:*',
+        'in': f'state:{state}+county:{county}', 
+        'key': CENSUS_API_KEY
+    }
+
+    r = requests.get(url, params=params)
+    rows = r.json()
+    header, data = rows[0], rows[1:]
+
+    print(data)
+
+acsCallWithTiger('36', '004200')
