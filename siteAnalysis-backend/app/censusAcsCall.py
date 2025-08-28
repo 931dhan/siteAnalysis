@@ -36,6 +36,7 @@ def acsCall(address):
 
     return result
 
+
 def acsCallWithTiger(state, county):
     
     url = 'https://api.census.gov/data/2023/acs/acs5'
@@ -50,9 +51,24 @@ def acsCallWithTiger(state, county):
     }
 
     r = requests.get(url, params=params)
-    rows = r.json()
-    header, data = rows[0], rows[1:]
+    response = r.json()
+    header, data = response[0], response[1:]
 
-    print(data)
+    print(header)
+    return ''
 
-acsCallWithTiger('36', '004200')
+
+acsCall('111 Small Road, Syracuse NY 13210')
+acsCallWithTiger('36', '067')
+
+# https://api.census.gov/data/2023/acs/acs5?
+# get=NAME%2CB19013_001E%2CB01003_001E&
+# for=tract%3A005602&
+# in=state%3A36%2Bcounty%3A067&
+# key=disabledAPIkey
+
+# http://api.census.gov/data/2023/acs/acs5?
+# get=NAME%2CB19013_001E%2CB01003_001E&
+# for=tract%3A*&
+# in=state%3A36%2Bcounty%3A004200&
+# key=disabledAPIkey

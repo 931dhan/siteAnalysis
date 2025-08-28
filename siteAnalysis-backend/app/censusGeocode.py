@@ -19,7 +19,7 @@ def censusGeocode(address: str):
         'format' : 'json'
     }
 
-
+    
 
     resp = requests.get(url, params=params)
     data = resp.json()['result']['addressMatches'][0]['geographies']['Census Tracts'][0]
