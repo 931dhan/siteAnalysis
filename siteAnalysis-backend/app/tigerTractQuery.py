@@ -13,31 +13,25 @@ def tigerTractQuery(lat, lon, radiusMiles):
         "distance": radiusMiles * 1609.344,
         "units": "esriSRUnit_Meter",
         # spatialRel refers to how we want geometry to interact with the radius. 
-        "spatialRel": "esriSpatialRelIntersects",
+        "spatialRel": "esriSpatialRelContains",
         "outFields": "STATE,COUNTY,TRACT,GEOID,NAME",
         "returnGeometry": "false",
         "f": "pjson"
     }
+    
+    tracts = requests.get(url, params=params).json().get("features", [])    
 
-    response = requests.get(url, params=params).json().get("features", [])
-    
-    tracts = response
-    
+    # Format each tract in the response into python objects.
     tractInfo = [
         {
-            "state": t["attributes"]["STATE"],
-            "county": t["attributes"]["COUNTY"],
-            "tract": t["attributes"]["TRACT"],
-            "geoid": t["attributes"]["GEOID"],
-            "name": t["attributes"]["NAME"],
+            "state": tract["attributes"]["STATE"],
+            "county": tract["attributes"]["COUNTY"],
+            "tract": tract["attributes"]["TRACT"],
+            "geoid": tract["attributes"]["GEOID"],
+            "name": tract["attributes"]["NAME"],
         }
-        for t in tracts
+        for tract in tracts
     ]
 
+    # Returns a list of tract objects 
     return tractInfo
-
-
-res = tigerTractQuery(43.0387, -76.1337, 1)
-
-print(res)
-

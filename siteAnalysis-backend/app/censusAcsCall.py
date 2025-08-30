@@ -2,6 +2,8 @@ import requests
 import os 
 from dotenv import load_dotenv
 from censusGeocode import censusGeocode
+from tigerTractQuery import tigerTractQuery
+from collections import defaultdict 
 
 
 load_dotenv()
@@ -31,44 +33,90 @@ def acsCall(address):
     resp = requests.get(url, params=params)
     data = resp.json()
 
-    headers, values = data[0], data[1]
-    result = dict(zip(headers, values))
+    # Seperating paremeter names from data of tract. 
+    parameters, values = data[0], data[1]
+    result = dict(zip(parameters, values))
 
     return result
 
 
-def acsCallWithTiger(state, county):
+def acsCallWithTiger(lat, lon, radiusMiles, state, county):
+
+    # Grab all tracts inside the radius of the specified point. 
+    targetTracts = tigerTractQuery(lat, lon, radiusMiles)
+
+    # Since we will fetch tract data by county to minimize calls, gather all unique state + county pairs found in the tracts in the radius 
+    # of the location, and pull data for those counties. 
+    statesCounties = {(tract['state'], tract['county']) for tract in targetTracts}
+        
     
     url = 'https://api.census.gov/data/2023/acs/acs5'
 
     variables = ','.join(['NAME', 'B19013_001E', 'B01003_001E'])
 
-    params = {
-        'get': variables,   
-        'for': f'tract:*',
-        'in': f'state:{state}+county:{county}', 
-        'key': CENSUS_API_KEY
-    }
+    allTracts = {}
 
-    r = requests.get(url, params=params)
-    response = r.json()
-    header, data = response[0], response[1:]
+    for stateCounty in statesCounties: 
 
-    print(header)
-    return ''
+        # Retrieving all tract data from a county to minimize API calls. 
+        params = {
+            'get': variables,   
+            'for': f'tract:*',
+            'in': f'state:{stateCounty[0]}+county:{stateCounty[1]}', 
+            'key': CENSUS_API_KEY
+        }
+
+        resp = requests.get(url, params=params)
+        response = resp.json()
+        # Separating parameter names from data of multiple tracts. 
+        parameters, values = response[0], response[1:]
+
+        # Creating object for each tract, and inserting it in dictionary to achieve O(1) lookup time using tract ID. 
+        
+        for value in values: 
+            info = dict(zip(parameters, value))
+            geoid = stateCounty[0] + stateCounty[1] + info['tract']
+            allTracts[geoid] = info
+
+    # Finally, for each tract that was found within the radius of the specified location using the Census TIGERweb ArcGIS REST service, 
+    # Look it up allTracts, where ACS data is available for every tract in the county.
+    res = [allTracts.get(tract['geoid'], None) for tract in targetTracts]
+
+    print(statesCounties)
+    return res
+
+print('break')
+print(acsCallWithTiger(43.0387, -76.1337, 1, '36', '067'))
 
 
-acsCall('111 Small Road, Syracuse NY 13210')
-acsCallWithTiger('36', '067')
 
-# https://api.census.gov/data/2023/acs/acs5?
-# get=NAME%2CB19013_001E%2CB01003_001E&
-# for=tract%3A005602&
-# in=state%3A36%2Bcounty%3A067&
-# key=disabledAPIkey
 
-# http://api.census.gov/data/2023/acs/acs5?
-# get=NAME%2CB19013_001E%2CB01003_001E&
-# for=tract%3A*&
-# in=state%3A36%2Bcounty%3A004200&
-# key=disabledAPIkey
+
+
+
+[{'state': '36', 'county': '067', 'tract': '004301', 'geoid': '36067004301', 'name': 'Census Tract 43.01'},
+ {'state': '36', 'county': '067', 'tract': '004302', 'geoid': '36067004302', 'name': 'Census Tract 43.02'}]
+[{'NAME': 'Census Tract 43.01; Onondaga County; New York', 'B19013_001E': '13893', 'B01003_001E': '1841', 'state': '36', 'county': '067', 'tract': '004301'}, 
+ {'NAME': 'Census Tract 43.02; Onondaga County; New York', 'B19013_001E': '18241', 'B01003_001E': '7628', 'state': '36', 'county': '067', 'tract': '004302'}]
+
+[{'NAME': 'Census Tract 43.01; Onondaga County; New York', 'B19013_001E': '13893', 'B01003_001E': '1841', 'state': '36', 'county': '067', 'tract': '004301'},
+ {'NAME': 'Census Tract 43.02; Onondaga County; New York', 'B19013_001E': '18241', 'B01003_001E': '7628', 'state': '36', 'county': '067', 'tract': '004302'}]
+
+
+
+
+
+# allTracts
+{'NAME': 'Census Tract 164; Onondaga County; New York', 
+ 'B19013_001E': '84167', 
+ 'B01003_001E': '4076', 
+ 'state': '36', 
+ 'county': '067', 
+ 'tract': '016400'}
+
+# targetTracts 
+{'state': '36', 
+ 'county': '067', 
+ 'tract': '004301', 
+ 'geoid': '36067004301', 
+ 'name': 'Census Tract 43.01'}

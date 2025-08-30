@@ -32,7 +32,7 @@ def censusGeocode(address: str):
         'COUNTY': data['COUNTY'],
         'in' :f'state:{data['STATE']}+county:{data['COUNTY']}'
         }
-    print(censusLoc)
+
     return censusLoc
 
 # censusGeocode('111 Small Road, Syracuse NY 13210')
