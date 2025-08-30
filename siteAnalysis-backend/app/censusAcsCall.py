@@ -10,7 +10,7 @@ load_dotenv()
 CENSUS_API_KEY = os.getenv('CENSUS_API_KEY')
 
 
-def acsCall(address): 
+def acsCall(lat, lon): 
 
     # Base URL for API calls to Census ACS API 
     # Example of a call
@@ -18,7 +18,7 @@ def acsCall(address):
     url = 'https://api.census.gov/data/2023/acs/acs5'
 
     # Find the tract, state, and county of address. 
-    geo = censusGeocode(address)
+    geo = censusGeocode(lat, lon)
 
     #  Variables correspond to a different demographic variables, such as median income, population, etc. 
     variables = ','.join(['NAME', 'B19013_001E', 'B01003_001E'])
@@ -40,7 +40,7 @@ def acsCall(address):
     return result
 
 
-def acsCallWithTiger(lat, lon, radiusMiles, state, county):
+def acsCallWithTiger(lat, lon, radiusMiles):
 
     # Grab all tracts inside the radius of the specified point. 
     targetTracts = tigerTractQuery(lat, lon, radiusMiles)
@@ -82,13 +82,12 @@ def acsCallWithTiger(lat, lon, radiusMiles, state, county):
     # Look it up allTracts, where ACS data is available for every tract in the county.
     res = [allTracts.get(tract['geoid'], None) for tract in targetTracts]
 
-    print(statesCounties)
     return res
 
 print('break')
-print(acsCallWithTiger(43.0387, -76.1337, 1, '36', '067'))
-
-
+print(acsCallWithTiger(43.0387, -76.1337, 1))
+print(acsCallWithTiger(43.049345, -76.138055, 1))
+print('break')
 
 
 

@@ -2,27 +2,29 @@ import requests
 import json
 
 
-def censusGeocode(address: str):
+def censusGeocode(lat, lon):
 
     # We want the geocoding response along with the geographic lookup information for various levels of geography.
     returntype = 'geographies'
     # Inputted location will be formatted as an address in one line. 
-    searchtype = 'onelineaddress'
+    searchtype = 'coordinates'
 
     # Base url for API call. 
     url = f'https://geocoding.geo.census.gov/geocoder/{returntype}/{searchtype}'
 
     params = {
-        'address' : address, 
+        'x' :  lon,
+        'y' : lat,
         'benchmark' : 'Public_AR_Current',
         'vintage' : 'Current_Current',
         'format' : 'json'
+        
     }
-
+    
     
 
     resp = requests.get(url, params=params)
-    data = resp.json()['result']['addressMatches'][0]['geographies']['Census Tracts'][0]
+    data = resp.json()['result']['geographies']['Census Tracts'][0]
 
 
     censusLoc = {
@@ -35,4 +37,4 @@ def censusGeocode(address: str):
 
     return censusLoc
 
-# censusGeocode('111 Small Road, Syracuse NY 13210')
+# print(censusGeocode('43.0387', '-76.1337'))

@@ -2,10 +2,10 @@ from flask import *
 from dotenv import load_dotenv
 from markupsafe import escape
 import googlemaps
-import  requests
+import requests
 import os
 
-from censusAcsCall import acsCall
+from censusAcsCall import acsCallWithTiger
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv('GOOGLE_API_KEY')
@@ -29,8 +29,7 @@ def analyze_location():
 
     if request.method == 'GET': 
 
-
-        # Parameters (arguments passed in the url)
+        # Parameters (arguments passed in the url), formatting it into object. 
         address = request.args.get('address', 'Invalid Address')
         business_type = request.args.get('business_type', 'Unspecified')
         radius = request.args.get('radius', '1')
@@ -41,21 +40,42 @@ def analyze_location():
             'radius' : str(radius)
         }
 
-        
-        res = acsCall(address)
-
-        res['Median Income'] = res.pop('B19013_001E')
-        res['Block-level Population'] = res.pop('B01003_001E')
-
+        print(business['address'])
+        # Geocoding address via Google Mas Geocoding service. 
         gLocation = gmaps.geocode(business['address'])
-        latLong = gLocation[0]['geometry']['location']
-        lat = latLong['lat']
-        long = latLong['lng']
-        res['lat'] = lat
-        res['lng'] = long
+        latLon = gLocation[0]['geometry']['location']
+        lat = latLon['lat']
+        lon = latLon['lng']
 
-        print(latLong)
-        return res
+        print(lat)
+        print(lon)
+
+        # Retrieving all tracts w/ ACS data within a mile radius of the address. 
+        tracts = acsCallWithTiger(lat, lon, 1)
+
+        # Iterating through all tracts to retrieve data on total population and median income. 
+        populationAbrev, medianIncomeAbrev = "B01003_001E", "B19013_001E"
+        totalPopulation, totalIncome = 0, 0
+ 
+        for tract in tracts:
+            print(tract)
+            print(tract[medianIncomeAbrev])
+            print(tract[populationAbrev])
+
+            totalPopulation += int(tract[populationAbrev])
+            totalIncome += int(tract[medianIncomeAbrev]) * int(tract[populationAbrev])
+            
+        medianIncome = totalIncome / totalPopulation
+
+        businessInfo = {
+            'Address' : 'd',
+            'lat' : lat, 
+            'lon' : lon,
+            'Population' : totalPopulation, 
+            'Median Income' : medianIncome
+        }
+        
+        return businessInfo
     
     return error
 
@@ -74,7 +94,17 @@ def hello(name=None):
 
 with app.test_request_context():
     print(url_for('home'))
-    print(url_for('user', username='pierrot'))
-    print(url_for('static', filename='style.css'))
+    # print(url_for('user', username='pierrot'))
+    # print(url_for('static', filename='style.css'))
 
     
+
+
+# 13893,  1841
+# 18241, 7628
+
+# 9469
+
+# 2701.13137607 + 14694.513465
+
+
