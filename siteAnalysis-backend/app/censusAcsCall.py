@@ -86,36 +86,14 @@ def acsCallWithTiger(lat, lon, radiusMiles):
 
 print('break')
 print(acsCallWithTiger(43.0387, -76.1337, 1))
-print(acsCallWithTiger(43.049345, -76.138055, 1))
 print('break')
 
 
-
-
-
-[{'state': '36', 'county': '067', 'tract': '004301', 'geoid': '36067004301', 'name': 'Census Tract 43.01'},
- {'state': '36', 'county': '067', 'tract': '004302', 'geoid': '36067004302', 'name': 'Census Tract 43.02'}]
 [{'NAME': 'Census Tract 43.01; Onondaga County; New York', 'B19013_001E': '13893', 'B01003_001E': '1841', 'state': '36', 'county': '067', 'tract': '004301'}, 
  {'NAME': 'Census Tract 43.02; Onondaga County; New York', 'B19013_001E': '18241', 'B01003_001E': '7628', 'state': '36', 'county': '067', 'tract': '004302'}]
 
-[{'NAME': 'Census Tract 43.01; Onondaga County; New York', 'B19013_001E': '13893', 'B01003_001E': '1841', 'state': '36', 'county': '067', 'tract': '004301'},
- {'NAME': 'Census Tract 43.02; Onondaga County; New York', 'B19013_001E': '18241', 'B01003_001E': '7628', 'state': '36', 'county': '067', 'tract': '004302'}]
+[{'NAME': 'Census Tract 16; Onondaga County; New York', 'B19013_001E': '29974', 'B01003_001E': '3388', 'state': '36', 'county': '067', 'tract': '001600'}, 
+ {'NAME': 'Census Tract 23; Onondaga County; New York', 'B19013_001E': '23606', 'B01003_001E': '1701', 'state': '36', 'county': '067', 'tract': '002300'}, 
+ {'NAME': 'Census Tract 24; Onondaga County; New York', 'B19013_001E': '58382', 'B01003_001E': '2256', 'state': '36', 'county': '067', 'tract': '002400'}, 
+ {'NAME': 'Census Tract 34; Onondaga County; New York', 'B19013_001E': '22358', 'B01003_001E': '1775', 'state': '36', 'county': '067', 'tract': '003400'}]
 
-
-
-
-
-# allTracts
-{'NAME': 'Census Tract 164; Onondaga County; New York', 
- 'B19013_001E': '84167', 
- 'B01003_001E': '4076', 
- 'state': '36', 
- 'county': '067', 
- 'tract': '016400'}
-
-# targetTracts 
-{'state': '36', 
- 'county': '067', 
- 'tract': '004301', 
- 'geoid': '36067004301', 
- 'name': 'Census Tract 43.01'}

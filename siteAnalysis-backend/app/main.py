@@ -31,6 +31,9 @@ def analyze_location():
 
         # Parameters (arguments passed in the url), formatting it into object. 
         address = request.args.get('address', 'Invalid Address')
+        city = request.args.get('city', 'Invalid City')
+        state = request.args.get('state', 'Invalid State')
+        zipCode = request.args.get('zip', 'Invalid ZIP')
         business_type = request.args.get('business_type', 'Unspecified')
         radius = request.args.get('radius', '1')
 
@@ -40,15 +43,15 @@ def analyze_location():
             'radius' : str(radius)
         }
 
-        print(business['address'])
         # Geocoding address via Google Mas Geocoding service. 
-        gLocation = gmaps.geocode(business['address'])
+        # Universities, PO boxes, rural areas don't work too well with Google's geocoding service.
+        # Instead let user input lat or long, place a pin on a map, or integrate places API to more accurately search places. 
+        gLocation = gmaps.geocode(address=business['address'], 
+                                  components= {'country' : 'US', 'administrative_area': f'{state}', 
+                                               'locality' : f'{city}', 'postal_code' : f'{zipCode}'})
         latLon = gLocation[0]['geometry']['location']
         lat = latLon['lat']
         lon = latLon['lng']
-
-        print(lat)
-        print(lon)
 
         # Retrieving all tracts w/ ACS data within a mile radius of the address. 
         tracts = acsCallWithTiger(lat, lon, 1)
@@ -58,17 +61,13 @@ def analyze_location():
         totalPopulation, totalIncome = 0, 0
  
         for tract in tracts:
-            print(tract)
-            print(tract[medianIncomeAbrev])
-            print(tract[populationAbrev])
-
             totalPopulation += int(tract[populationAbrev])
             totalIncome += int(tract[medianIncomeAbrev]) * int(tract[populationAbrev])
             
         medianIncome = totalIncome / totalPopulation
 
         businessInfo = {
-            'Address' : 'd',
+            'Address' : business['address'],
             'lat' : lat, 
             'lon' : lon,
             'Population' : totalPopulation, 
@@ -78,6 +77,7 @@ def analyze_location():
         return businessInfo
     
     return error
+
 
 # Can mark sections with <> that accepts variables 
 # Can specify data type with a format such as <int:userId>
