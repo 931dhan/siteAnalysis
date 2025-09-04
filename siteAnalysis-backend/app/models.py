@@ -21,7 +21,7 @@ class AnalyzeQueries(Base):
     __tablename__ = "analyzequeries"
     
     # Columns 
-    id: Mapped[int]
+    id: Mapped[int]  = mapped_column(primary_key=True)
     address: Mapped[str]
     city: Mapped[str]
     state: Mapped[str]
@@ -35,3 +35,9 @@ class AnalyzeQueries(Base):
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, address={self.address!r})"
+
+# Connection test
+# with engine.connect() as conn:
+#         print(conn.exec_driver_sql("select 1").scalar())
+
+Base.metadata.create_all(bind=engine)
