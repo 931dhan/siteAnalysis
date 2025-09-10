@@ -1,1 +1,3 @@
 replacements.txt
+siteAnalysis-backend\__pycache__
+siteAnalysis-backend\app\__pycache__
