@@ -7,6 +7,14 @@ from sqlalchemy.orm import sessionmaker, DeclarativeBase, Mapped, mapped_column
 from dotenv import load_dotenv
 import os
 
+# load_dotenv()
+# DATABASE_URL = os.getenv("DATABASE_URL")
+
+# # Create engine that holds creates and holds onto connections. 
+# engine = create_engine(DATABASE_URL, echo=True, pool_pre_ping=True, pool_size=5, future=True)
+# # Create configuration for sessions. 
+# Session = sessionmaker(bind=engine, autoflush=False, autocommit=False, future=True)
+
 with Session() as session: 
     syracuse = AnalyzeQueries(
         id="2",

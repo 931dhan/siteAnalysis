@@ -1,6 +1,7 @@
 from flask import *
 from dotenv import load_dotenv
 from markupsafe import escape
+from dbcalls import queryAdd
 import googlemaps
 import requests
 import os
@@ -43,7 +44,7 @@ def analyze_location():
             'radius' : str(radius)
         }
 
-        # Geocoding address via Google Mas Geocoding service. 
+        # Geocoding address via Google Maps Geocoding service. 
         # Universities, PO boxes, rural areas don't work too well with Google's geocoding service.
         # Instead let user input lat or long, place a pin on a map, or integrate places API to more accurately search places. 
         gLocation = gmaps.geocode(address=business['address'], 
@@ -67,12 +68,20 @@ def analyze_location():
         medianIncome = totalIncome / totalPopulation
 
         businessInfo = {
-            'Address' : business['address'],
-            'lat' : lat, 
+            'address' : business['address'],
+            'city' : city, 
+            'state' : state, 
+            'zipCode' : zipCode, 
+            'business_type' : business_type, 
+            'radius' : radius, 
+            'lat' : lat,
             'lon' : lon,
-            'Population' : totalPopulation, 
-            'Median Income' : medianIncome
+            'population' : totalPopulation, 
+            'medianincome' : medianIncome
         }
+
+        queryAdd(businessInfo)
+
         
         return businessInfo
     

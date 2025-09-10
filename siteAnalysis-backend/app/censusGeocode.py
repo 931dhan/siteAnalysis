@@ -18,7 +18,6 @@ def censusGeocode(lat, lon):
         'benchmark' : 'Public_AR_Current',
         'vintage' : 'Current_Current',
         'format' : 'json'
-        
     }
     
     

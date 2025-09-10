@@ -40,4 +40,4 @@ class AnalyzeQueries(Base):
 # with engine.connect() as conn:
 #         print(conn.exec_driver_sql("select 1").scalar())
 
-Base.metadata.create_all(bind=engine)
+# Base.metadata.create_all(bind=engine)
